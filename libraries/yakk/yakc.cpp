@@ -66,7 +66,7 @@ void YKInitialize(void) {
 		YKSemArray[i].nextSem = &(YKSemArray[i+1]);
 	}
 	YKSemArray[MAXSEMS-1].nextSem = NULL;
-	
+
 	//Initialize queue list
 	YKQueueFreeList = &(YKQueueArray[0]);
 	for (i = 0; i < MAXQUEUES-1; i++) {
@@ -99,7 +99,7 @@ void YKNewTask(void (* task)(void), void *taskStack, UBYTE priority) {
 
 		if (YKNumTasksCreated <= MAXTASKS) {
 			YKNumTasksCreated++;
-	
+
 			stack = (UWORD *)taskStack;
 			*(--stack) = (UBYTE)0x0000;		//R0	= 0
 			*(--stack) = (UBYTE)0x0000;		//R1	= 0
@@ -271,7 +271,7 @@ void YKEnterISR(void) {
 	YKEnterMutex();
 	YKInterruptLevel++;
 	YKExitMutex();
-} 
+}
 
 void YKExitISR(void) {
 	YKEnterMutex();
@@ -286,7 +286,7 @@ void YKScheduler(void) {
 	YKEnterMutex();
 	if (YKCurTask != YKReadyList) {
 		YKCtxSwCount++;
-		YKDispatcher();		
+		YKDispatcher();
 	}
 	YKExitMutex();
 }
@@ -327,10 +327,10 @@ YKSemPtr YKSemCreate(int count) {
 	YKEnterMutex();
 	newSem = YKSemFreeList; //Get next available semaphore block
 	if (YKSemFreeList != NULL) {
-		YKSemFreeList = (YKSemPtr) YKSemFreeList->nextSem;		
+		YKSemFreeList = (YKSemPtr) YKSemFreeList->nextSem;
 	}
 	if (YKRunning) {
-		YKExitMutex();		
+		YKExitMutex();
 	}
 	if (newSem != NULL) { //Initialize values
 		newSem->count = count;
@@ -363,7 +363,7 @@ void YKSemPost(YKSemPtr sem) {
 		YKAddTCBToList(&YKReadyList, pendHead);
 		YKExitMutex();
 		if (YKInterruptLevel == 0) {
-			YKScheduler();			
+			YKScheduler();
 		}
 	}
 	else {
@@ -516,7 +516,7 @@ void YKEventSet(YKEventPtr event, unsigned int eventMask) {
 		nextPend = curPend->next;
 		req_flags = curPend->event_flags;
 		mode = curPend->event_mode;
-		
+
 		ready = (mode == EVENT_WAIT_ANY) && ((group_flags & req_flags) > 0);
 		ready |= (mode == EVENT_WAIT_ALL) && ((group_flags & req_flags) == req_flags);
 

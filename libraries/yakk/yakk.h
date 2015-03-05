@@ -50,7 +50,7 @@ typedef struct taskblock {
 extern YK_TCB YKTCBArray[MAXTASKS+1];
 extern TCBptr YKReadyList;
 extern TCBptr YKDelayedList;
-extern TCBptr YKTCBFreeList;	
+extern TCBptr YKTCBFreeList;
 extern TCBptr YKCurTask;
 
 /***********************************************************************
@@ -99,7 +99,7 @@ typedef struct event {
 	TCBptr		pendList;
 	YKEventPtr	nextEvent;
 } YK_EVENT;
-typedef struct event YKEVENT; //alias used by Lab7 task code 
+typedef struct event YKEVENT; //alias used by Lab7 task code
 
 extern YK_EVENT YKEventArray[MAXEVENTS];
 extern YKEventPtr YKEventFreeList;

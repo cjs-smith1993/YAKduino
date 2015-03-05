@@ -1,4 +1,4 @@
-/* 
+/*
 File: lab7app.c
 Revision date: 10 November 2005
 Description: Application code for EE 425 lab 7 (Event flags)
@@ -35,10 +35,10 @@ void CharTask(void)        /* waits for any events triggered by letter keys */
 	lcd.printStr("Started CharTask     (2)\n");
 
 	while(1) {
-		events = YKEventPend(charEvent, 
+		events = YKEventPend(charEvent,
 							 EVENT_A_KEY | EVENT_B_KEY | EVENT_C_KEY,
 							 EVENT_WAIT_ANY);
-		
+
 		if(events == 0) {
 			lcd.printStr("Oops! At least one event should be set "
 						"in return value!\n");
@@ -48,12 +48,12 @@ void CharTask(void)        /* waits for any events triggered by letter keys */
 			lcd.printStr("CharTask     (A)\n");
 			YKEventReset(charEvent, EVENT_A_KEY);
 		}
-		
+
 		if(events & EVENT_B_KEY) {
 			lcd.printStr("CharTask     (B)\n");
 			YKEventReset(charEvent, EVENT_B_KEY);
 		}
-		
+
 		if(events & EVENT_C_KEY) {
 			lcd.printStr("CharTask     (C)\n");
 			YKEventReset(charEvent, EVENT_C_KEY);
@@ -69,11 +69,11 @@ void AllCharsTask(void)    /* waits for all events triggered by letter keys */
 	lcd.printStr("Started AllCharsTask (3)\n");
 
 	while(1) {
-		events = YKEventPend(charEvent, 
+		events = YKEventPend(charEvent,
 							 EVENT_A_KEY | EVENT_B_KEY | EVENT_C_KEY,
 							 EVENT_WAIT_ALL);
 		// To be reset by WaitForAny task
-		
+
 		if(events != 0) {
 			lcd.printStr("Oops! Char events weren't reset by CharTask!\n");
 		}
@@ -90,10 +90,10 @@ void AllNumsTask(void)     /* waits for events triggered by number keys */
 	lcd.printStr("Started AllNumsTask  (1)\n");
 
 	while(1) {
-		events = YKEventPend(numEvent, 
+		events = YKEventPend(numEvent,
 							 EVENT_1_KEY | EVENT_2_KEY | EVENT_3_KEY,
 							 EVENT_WAIT_ALL);
-		
+
 		if(events != (EVENT_1_KEY | EVENT_2_KEY | EVENT_3_KEY)) {
 			lcd.printStr("Oops! All events should be set in return value!\n");
 		}
@@ -122,23 +122,23 @@ void STask(void)           /* tracks statistics */
 	YKNewTask(CharTask, (void *) &CharTaskStk[TASK_STACK_SIZE], 2);
 	YKNewTask(AllNumsTask, (void *) &AllNumsTaskStk[TASK_STACK_SIZE], 1);
 	YKNewTask(AllCharsTask, (void *) &AllCharsTaskStk[TASK_STACK_SIZE], 3);
-	
+
 	while (1)
 	{
 		YKDelayTask(20);
-		
+
 		YKEnterMutex();
 		switchCount = YKCtxSwCount;
 		idleCount = YKIdleCount;
 		YKExitMutex();
-		
+
 		lcd.printStr("<<<<< Context switches: ");
 		lcd.printNum((int)switchCount);
 		lcd.printStr(", CPU usage: ");
 		tmp = (int) (idleCount/max);
 		lcd.printNum(100-tmp);
 		lcd.printStr("% >>>>>\r\n");
-		
+
 		YKEnterMutex();
 		YKCtxSwCount = 0;
 		YKIdleCount = 0;
@@ -157,7 +157,7 @@ void setup()
 	charEvent = YKEventCreate(0);
 	numEvent = YKEventCreate(0);
 	YKNewTask(STask, (void *) &STaskStk[TASK_STACK_SIZE], 0);
-	
+
 	lcd.printStr("starting kernel");
 	lcd.nextLine();
 	delay(200);

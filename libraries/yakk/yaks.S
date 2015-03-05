@@ -83,7 +83,7 @@ YKDispatcher:
 	# SP = YKCurTask->stack_ptr
 	# mov		r26,	r28
 	# mov		r27,	r29
-	
+
 	# ld		r0,		x+
 	# out		0x3d,	r0
 	# ld		r0,		x+

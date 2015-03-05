@@ -1,7 +1,7 @@
 /**********************************************
 Graphic Serial LCD Libary Header File
 Joel Bartlett
-SparkFun Electronics 
+SparkFun Electronics
 9-25-13
 
 **********************************************/
@@ -34,12 +34,12 @@ class LCD
 	void drawBox(byte x1, byte y1, byte x2, byte y2, byte set);
 	void drawCircle(byte x, byte y, byte rad, byte set);
 	void eraseBlock(byte x1, byte y1, byte x2, byte y2);
-	
-	
+
+
 	private:
-    
-    
-    
+
+
+
 
 };
 

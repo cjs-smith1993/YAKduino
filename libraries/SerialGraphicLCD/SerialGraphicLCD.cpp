@@ -1,14 +1,14 @@
 /**********************************************
 Graphic Serial LCD Libary Main File
 Joel Bartlett
-SparkFun Electronics 
+SparkFun Electronics
 9-25-13
 
 **********************************************/
 #include "Arduino.h"
 #include "SerialGraphicLCD.h"
 
-//initialize an instance of the SoftwareSerial library 
+//initialize an instance of the SoftwareSerial library
 
 LCD::LCD()
 {
@@ -79,7 +79,7 @@ void LCD::setBaud(byte baud)
 “6” = 115,200bps - 0x36 = 54
 */
 
-  //these statements change the SoftwareSerial baud rate to match the baud rate of the LCD. 
+  //these statements change the SoftwareSerial baud rate to match the baud rate of the LCD.
   if(baud == 49)
   {
 	Serial1.end();
@@ -114,8 +114,8 @@ void LCD::setBaud(byte baud)
 //-------------------------------------------------------------------------------------------
 void LCD::restoreDefaultBaud()
 {
-//This function is used to restore the default baud rate in case you change it 
-//and forget to which rate it was changed. 
+//This function is used to restore the default baud rate in case you change it
+//and forget to which rate it was changed.
 
 
 Serial1.end();//end the transmission at whatever the current baud rate is
@@ -169,7 +169,7 @@ void LCD::demo()
 //-------------------------------------------------------------------------------------------
 void LCD::setX(byte posX) //0-127 or 0-159 pixels
 {
-  //Set the X position 
+  //Set the X position
   Serial1.write(0x7C);
   Serial1.write(0x18);//CTRL x
   Serial1.write(posX);
@@ -177,13 +177,13 @@ void LCD::setX(byte posX) //0-127 or 0-159 pixels
 //characters are 8 pixels tall x 6 pixels wide
 //The top left corner of a char is where the x/y value will start its print
 //For example, if you print a char at position 1,1, the bottom right of your char will be at position 7,9.
-//Therefore, to print a character in the very bottom right corner, you would need to print at the coordinates 
+//Therefore, to print a character in the very bottom right corner, you would need to print at the coordinates
 //x = 154 , y = 120. You should never exceed these values.
 
 
-// Here we have an example using an upper case 'B'. The star is where the character starts, given a set 
-//of x,y coordinates. # represents the blocks that make up the character, and _ represnets the remaining 
-//unused bits in the char space. 
+// Here we have an example using an upper case 'B'. The star is where the character starts, given a set
+//of x,y coordinates. # represents the blocks that make up the character, and _ represnets the remaining
+//unused bits in the char space.
 //    *###__
 //    #   #_
 //    #   #_
@@ -196,21 +196,21 @@ void LCD::setX(byte posX) //0-127 or 0-159 pixels
 //-------------------------------------------------------------------------------------------
 void LCD::setY(byte posY)//0-63 or 0-127 pixels
 {
-  //Set the y position 
+  //Set the y position
   Serial1.write(0x7C);
   Serial1.write(0x19);//CTRL y
   Serial1.write(posY);
-  
+
 }
 //-------------------------------------------------------------------------------------------
 void LCD::setHome()
 {
   Serial1.write(0x7C);
-  Serial1.write(0x18); 
+  Serial1.write(0x18);
   Serial1.write((byte)0);//set x back to 0
-  
+
   Serial1.write(0x7C);
-  Serial1.write(0x19); 
+  Serial1.write(0x19);
   Serial1.write((byte)0);//set y back to 0
 }
 //-------------------------------------------------------------------------------------------
@@ -226,56 +226,56 @@ void LCD::setPixel(byte x, byte y, byte set)
 //-------------------------------------------------------------------------------------------
 void LCD::drawLine(byte x1, byte y1, byte x2, byte y2, byte set)
 {
-  //draws a line from two given points. You can set and reset just as the pixel function. 
+  //draws a line from two given points. You can set and reset just as the pixel function.
   Serial1.write(0x7C);
-  Serial1.write(0x0C);//CTRL l 
+  Serial1.write(0x0C);//CTRL l
   Serial1.write(x1);
   Serial1.write(y1);
   Serial1.write(x2);
   Serial1.write(y2);
   Serial1.write(0x01);
   delay(10);
-	
+
 }
 //-------------------------------------------------------------------------------------------
 void LCD::drawBox(byte x1, byte y1, byte x2, byte y2, byte set)
 {
-  //draws a box from two given points. You can set and reset just as the pixel function. 
+  //draws a box from two given points. You can set and reset just as the pixel function.
   Serial1.write(0x7C);
-  Serial1.write(0x0F);//CTRL o 
+  Serial1.write(0x0F);//CTRL o
   Serial1.write(x1);
   Serial1.write(y1);
   Serial1.write(x2);
   Serial1.write(y2);
   Serial1.write(0x01);
   delay(10);
-	
+
 }
 //-------------------------------------------------------------------------------------------
 void LCD::drawCircle(byte x, byte y, byte rad, byte set)
 {
-//draws a circle from a point x,y with a radius of rad. 
-//Circles can be drawn off-grid, but only those pixels that fall within the 
+//draws a circle from a point x,y with a radius of rad.
+//Circles can be drawn off-grid, but only those pixels that fall within the
 //display boundaries will be written.
   Serial1.write(0x7C);
-  Serial1.write(0x03);//CTRL c 
+  Serial1.write(0x03);//CTRL c
   Serial1.write(x);
   Serial1.write(y);
   Serial1.write(rad);
   Serial1.write(0x01);
   delay(10);
-	
+
 }
 //-------------------------------------------------------------------------------------------
 void LCD::eraseBlock(byte x1, byte y1, byte x2, byte y2)
 {
   //This is just like the draw box command, except the contents of the box are erased to the background color
   Serial1.write(0x7C);
-  Serial1.write(0x05);//CTRL e 
+  Serial1.write(0x05);//CTRL e
   Serial1.write(x1);
   Serial1.write(y1);
   Serial1.write(x2);
   Serial1.write(y2);
   delay(10);
-	
+
 }

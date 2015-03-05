@@ -1,4 +1,4 @@
-/* 
+/*
 File: lab4b_app.c
 Revision date: 23 December 2003
 Description: Application code for EE 425 lab 4B (Kernel essentials B)
@@ -58,7 +58,7 @@ void setup()
 		lcd.printStr("null");
 		lcd.nextLine();
 	}
-	
+
 
 	delay(500);
 	lcd.printStr("after ");

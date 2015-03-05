@@ -1,4 +1,4 @@
-/* 
+/*
 File: lab7defs.h
 Revision date: 26 December 2004
 Description: Required definitions for EE 425 lab 7 (Event flags)
