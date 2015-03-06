@@ -60,74 +60,33 @@ YKDispatcher:
 
 	# store current SP in TCB
 	# YKCurTask->stack_ptr = SP
-	lds		r26,	YKCurTask
-	lds		r27,	YKCurTask + 1
+	in		r28,	0x3d
+	in		r29,	0x3e
 
-	in		r0,		0x3d
-	st		x+,		r0
-	in		r0,		0x3e
-	st		x+,		r0
-
-	# load address of high priority TCB
-	# YKCurTask = YKReadyList
-	lds		r28,	YKReadyList
-	lds		r29,	YKReadyList + 1
-
-	lds		r26,	YKCurTask
-	lds		r27,	YKCurTask + 1
+	lds		r26,	YKReadyList
+	lds		r27,	YKReadyList + 1
 
 	st		x+,		r28
 	st		x+,		r29
 
+	# load address of high priority TCB
+	# YKCurTask = YKReadyList
+	lds		r26,	YKReadyList
+	lds		r27,	YKReadyList + 1
+
+	sts		YKCurTask,		r26
+	sts		YKCurTask + 1,	r27
+
 	# load new SP
 	# SP = YKCurTask->stack_ptr
-	# mov		r26,	r28
-	# mov		r27,	r29
+	lds		r26,	YKCurTask
+	lds		r27,	YKCurTask + 1
 
-	# ld		r0,		x+
-	# out		0x3d,	r0
-	# ld		r0,		x+
-	# out		0x3e,	r0
+	ld		r28,	x+
+	ld		r29,	x+
 
-	pop		r0
-	pop		r0
-
-	;restore new context
-	pop		r0
-	out		_SFR_IO_ADDR(SREG),		r0
-
-	pop		r31
-	pop		r30
-	pop		r29
-	pop		r28
-	pop		r27
-	pop		r26
-	pop		r25
-	pop		r24
-	pop		r23
-	pop		r22
-	pop		r21
-	pop		r20
-	pop		r19
-	pop		r18
-	pop		r17
-	pop		r16
-	pop		r15
-	pop		r14
-	pop		r13
-	pop		r12
-	pop		r11
-	pop		r10
-	pop		r9
-	pop		r8
-	pop		r7
-	pop		r6
-	pop		r5
-	pop		r4
-	pop		r3
-	pop		r2
-	pop		r1
-	pop		r0
+	out		0x3d,	r28
+	out		0x3e,	r29
 
 	ret
 
