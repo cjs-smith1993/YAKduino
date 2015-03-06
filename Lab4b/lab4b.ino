@@ -10,9 +10,9 @@ Description: Application code for EE 425 lab 4B (Kernel essentials B)
 
 extern LCD lcd;
 
-#define ASTACKSIZE 256			/* Size of each stack in words */
-#define BSTACKSIZE 256
-#define CSTACKSIZE 256
+#define ASTACKSIZE 512			/* Size of each stack in words */
+#define BSTACKSIZE 512
+#define CSTACKSIZE 512
 
 int AStk[ASTACKSIZE];			/* Space for each task's stack */
 int BStk[BSTACKSIZE];
@@ -28,11 +28,6 @@ void setup()
 	lcd.clearScreen();
 
 	YKInitialize();
-	YKExitMutex();
-
-	delay(500);
-	// lcd.printStr("Bananas");
-	// lcd.nextLine();
 	YKNewTask(ATask, (void *)&AStk[ASTACKSIZE], 5);
 	YKExitMutex();
 
@@ -44,21 +39,9 @@ void setup()
 	lcd.printNum(YKReadyList->priority);
 	lcd.nextLine();
 
-	// delay(500);
-	// lcd.printNum(*((int*)(YKCurTask->stack_ptr)));
-	// lcd.nextLine();
-
 	delay(500);
-	lcd.printStr("Starting kernel");
-	lcd.nextLine();
 	YKRun();
 	YKExitMutex();
-
-	if (YKCurTask == NULL) {
-		lcd.printStr("null");
-		lcd.nextLine();
-	}
-
 
 	delay(500);
 	lcd.printStr("after ");
@@ -74,14 +57,12 @@ void setup()
 }
 
 void loop() {
-	lcd.printStr("error");
-	lcd.nextLine();
-	delay(500000);
+
 }
 
 void ATask(void)
 {
-	delay(500);
+	// delay(500);
 	lcd.printStr("Task A started!");
 	lcd.nextLine();
 
