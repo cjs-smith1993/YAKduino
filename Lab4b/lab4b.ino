@@ -31,7 +31,7 @@ void setup()
 	YKNewTask(ATask, (void *)&AStk[ASTACKSIZE], 5);
 	YKExitMutex();
 
-	delay(500);
+	delay(200);
 	lcd.printStr("before");
 	lcd.nextLine();
 	lcd.printNum(*((int*)(YKReadyList->stack_ptr)));
@@ -39,11 +39,11 @@ void setup()
 	lcd.printNum(YKReadyList->priority);
 	lcd.nextLine();
 
-	delay(500);
+	delay(200);
 	YKRun();
 	YKExitMutex();
 
-	delay(500);
+	delay(200);
 	lcd.printStr("after ");
 	lcd.nextLine();
 	lcd.printNum(*((int*)(YKCurTask->stack_ptr)));
@@ -51,7 +51,7 @@ void setup()
 	lcd.printNum(YKCurTask->priority);
 	lcd.nextLine();
 
-	delay(500);
+	delay(200);
 	lcd.printStr("still here?");
 	lcd.nextLine();
 }
