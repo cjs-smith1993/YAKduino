@@ -14,7 +14,10 @@ YKExitMutex:
 
 .global YKDispatcher
 YKDispatcher:
+	##########################################################################
 	# save context
+	##########################################################################
+
 	push	r0
 	push	r1
 	push	r2
@@ -48,28 +51,46 @@ YKDispatcher:
 	push	r30
 	push	r31
 
+	##########################################################################
 	# save flags
+	##########################################################################
+
 	in		r0,		_SFR_IO_ADDR(SREG)
 	push	r0
 
+	##########################################################################
 	# push ptr to YKDispatcher2
+	##########################################################################
+
 	lds		r26,	YKDispatcher2
 	lds		r27,	YKDispatcher2 + 1
 	push	r26
 	push	r27
 
-	# store current SP in TCB
-	# YKCurTask->stack_ptr = SP
-	in		r28,	0x3d
-	in		r29,	0x3e
+	##########################################################################
+	# store current SP in current TCB
+	##########################################################################
 
-	lds		r26,	YKReadyList
-	lds		r27,	YKReadyList + 1
+	# z = SP
+	in		r30,	0x3d
+	in		r31,	0x3e
 
-	st		x+,		r28
-	st		x+,		r29
+	# x = [YKCurTask]
+	lds		r26,	YKCurTask
+	lds		r27,	YKCurTask + 1
 
-	# load address of high priority TCB
+	# y = [x] = [[YKCurTask]] = YKCurTask->stack_ptr
+	ld		r28,	x+
+	ld		r29,	x+
+
+	# [y] = [[[YKCurTask]]] = *(YKCurTask->stack_ptr) = z = SP
+	st		y+,		r30
+	st		y+,		r31
+
+	##########################################################################
+	# load high priority TCB
+	##########################################################################
+
 	# YKCurTask = YKReadyList
 	lds		r26,	YKReadyList
 	lds		r27,	YKReadyList + 1
@@ -77,16 +98,25 @@ YKDispatcher:
 	sts		YKCurTask,		r26
 	sts		YKCurTask + 1,	r27
 
-	# load new SP
-	# SP = YKCurTask->stack_ptr
+	##########################################################################
+	# load new SP from TCB
+	##########################################################################
+
+	# x = [YKCurTask]
 	lds		r26,	YKCurTask
 	lds		r27,	YKCurTask + 1
 
+	# y = [x] = [[YKCurTask]] = YKCurTask->stack_ptr
 	ld		r28,	x+
 	ld		r29,	x+
 
-	out		0x3d,	r28
-	out		0x3e,	r29
+	# z = [y] = [[[YKCurTask]]] = *(YKCurTask->stack_ptr)
+	ld		r30,	y+
+	ld		r31,	y+
+
+	# SP = z = *(YKCurTask->stack_ptr)
+	out		0x3d,	r30
+	out		0x3e,	r31
 
 	ret
 
@@ -117,7 +147,7 @@ YKDispatcher:
 	# iret
 
 YKDispatcher2:
-	;restore new context
+	# restore new context
 	pop		r0
 	out		_SFR_IO_ADDR(SREG),		r0
 
