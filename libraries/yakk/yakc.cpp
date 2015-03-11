@@ -91,7 +91,9 @@ void YKInitialize(void) {
 }
 
 void YKNewTask(void (* task)(void), void *taskStack, UBYTE priority) {
-	UWORD *stack;
+	UBYTE *stack;
+	UBYTE task_high = (UBYTE) ((int)task >> 8);
+	UBYTE task_low = (UBYTE) ((int)task & 0x00FF);
 
 	YKEnterMutex();
 	if (!YKPrioTable[priority]) {
@@ -100,7 +102,7 @@ void YKNewTask(void (* task)(void), void *taskStack, UBYTE priority) {
 		if (YKNumTasksCreated <= MAXTASKS) {
 			YKNumTasksCreated++;
 
-			stack = (UWORD *)taskStack;
+			stack = (UBYTE *)taskStack;
 			*(--stack) = (UBYTE)0x0000;		//R0	= 0
 			*(--stack) = (UBYTE)0x0000;		//R1	= 0
 			*(--stack) = (UBYTE)0x0000;		//R2	= 0
@@ -135,7 +137,9 @@ void YKNewTask(void (* task)(void), void *taskStack, UBYTE priority) {
 			*(--stack) = (UBYTE)0x0000;		//R31	= 0
 			*(--stack) = (UBYTE)0x0000;		//Flag register
 			// *(--stack) = (UWORD)0x0000;		//Segment crap
-			*(--stack) = (UWORD)task;		//Return address
+			// *(--stack) = (UWORD)task;		//Return address
+			*(--stack) = (UBYTE)task_high;
+			*(--stack) = (UBYTE)task_low;
 
 			YKTCBInit(priority, (void *)stack);
 
