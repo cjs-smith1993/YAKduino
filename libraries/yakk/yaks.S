@@ -62,63 +62,66 @@ YKDispatcher:
 	# push ptr to YKDispatcher2
 	##########################################################################
 
-	lds		r26,	YKDispatcher2
-	lds		r27,	YKDispatcher2 + 1
-	push	r26
-	push	r27
+	# ldi		r26,	lo8(YKDispatcher2)
+	# ldi		r27,	hi8(YKDispatcher2)
+	# push	r26
+	# push	r27
 
 	##########################################################################
 	# store current SP in current TCB
 	##########################################################################
 
-	# z = SP
-	in		r30,	0x3d
-	in		r31,	0x3e
+	# x <- SP
+	in		r26,	0x3d
+	in		r27,	0x3e
 
-	# x = [YKCurTask]
-	lds		r26,	YKCurTask
-	lds		r27,	YKCurTask + 1
+	# y <- [YKCurTask]
+	lds		r28,	YKCurTask
+	lds		r29,	YKCurTask+1
 
-	# y = [x] = [[YKCurTask]] = YKCurTask->stack_ptr
-	ld		r28,	x+
-	ld		r29,	x+
+	# z <- [[YKCurTask]] = YKCurTask->stack_ptr
+	ldd		r30,	y+0
+	ldd		r31,	y+1
 
-	# [y] = [[[YKCurTask]]] = *(YKCurTask->stack_ptr) = z = SP
-	st		y+,		r30
-	st		y+,		r31
+	# [z] = [[[YKCurTask]]] = *(YKCurTask->stack_ptr) <- SP
+	std		z+0,	r26
+	std		z+1,	r27
 
-	##########################################################################
-	# load high priority TCB
-	##########################################################################
+	# ##########################################################################
+	# # load high priority TCB
+	# ##########################################################################
 
 	# YKCurTask = YKReadyList
 	lds		r26,	YKReadyList
-	lds		r27,	YKReadyList + 1
+	lds		r27,	YKReadyList+1
 
 	sts		YKCurTask,		r26
-	sts		YKCurTask + 1,	r27
+	sts		YKCurTask+1,	r27
 
-	##########################################################################
-	# load new SP from TCB
-	##########################################################################
+	# ##########################################################################
+	# # load new SP from TCB
+	# ##########################################################################
 
-	# x = [YKCurTask]
-	lds		r26,	YKCurTask
-	lds		r27,	YKCurTask + 1
+	# y = [YKCurTask]
+	lds		r28,	YKCurTask
+	lds		r29,	YKCurTask+1
 
-	# y = [x] = [[YKCurTask]] = YKCurTask->stack_ptr
-	ld		r28,	x+
-	ld		r29,	x+
+	# z = [y] = [[YKCurTask]] = YKCurTask->stack_ptr
+	ldd		r30,	y+0
+	ldd		r31,	y+1
 
-	# z = [y] = [[[YKCurTask]]] = *(YKCurTask->stack_ptr)
-	ld		r30,	y+
-	ld		r31,	y+
+	# x = [z] = [[[YKCurTask]]] = *(YKCurTask->stack_ptr)
+	ldd		r26,	z+0
+	ldd		r27,	z+1
 
 	# SP = z = *(YKCurTask->stack_ptr)
-	out		0x3d,	r30
-	out		0x3e,	r31
+	out		0x3d,	r26
+	out		0x3e,	r27
 
-	ret
+	# pop		r31
+	# pop		r30
+	# ijmp
+	# reti
 
 	# push	ax						;save current context
 	# push	cx
