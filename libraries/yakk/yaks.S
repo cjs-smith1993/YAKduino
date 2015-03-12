@@ -62,10 +62,13 @@ YKDispatcher:
 	# push ptr to YKDispatcher2
 	##########################################################################
 
-	# ldi		r26,	lo8(YKDispatcher2)
-	# ldi		r27,	hi8(YKDispatcher2)
-	# push	r26
-	# push	r27
+	ldi		r26,	lo8(YKDispatcher2)
+	ror		r26
+	ldi		r27,	hi8(YKDispatcher2)
+	lsr		r27
+
+	push	r26
+	push	r27
 
 	##########################################################################
 	# store current SP in current TCB
@@ -110,9 +113,10 @@ YKDispatcher:
 	out		0x3d,	r26
 	out		0x3e,	r27
 
-	# pop		r31
-	# pop		r30
-	# ijmp
+	pop		r31
+	pop		r30
+	ijmp
+
 	# reti
 
 	# push	ax						;save current context
