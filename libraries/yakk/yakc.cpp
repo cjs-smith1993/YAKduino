@@ -92,8 +92,10 @@ void YKInitialize(void) {
 
 void YKNewTask(void (* task)(void), void *taskStack, UBYTE priority) {
 	UBYTE *stack;
-	UBYTE task_high = (UBYTE) ((int)task >> 8);
-	UBYTE task_low = (UBYTE) ((int)task & 0x00FF);
+	UWORD taskAddr = (UWORD)task;
+	UBYTE task_hi8 = (UBYTE)((taskAddr >> 16) & 0x00FF);
+	UBYTE task_mid8 = (UBYTE)((taskAddr >> 8) & 0x00FF);
+	UBYTE task_lo8 = (UBYTE)((taskAddr >> 0) & 0x00FF);
 
 	YKEnterMutex();
 	if (!YKPrioTable[priority]) {
@@ -103,43 +105,49 @@ void YKNewTask(void (* task)(void), void *taskStack, UBYTE priority) {
 			YKNumTasksCreated++;
 
 			stack = (UBYTE *)taskStack;
-			*(--stack) = (UBYTE)0x0000;		//R0	= 0
-			*(--stack) = (UBYTE)0x0000;		//R1	= 0
-			*(--stack) = (UBYTE)0x0000;		//R2	= 0
-			*(--stack) = (UBYTE)0x0000;		//R3	= 0
-			*(--stack) = (UBYTE)0x0000;		//R4	= 0
-			*(--stack) = (UBYTE)0x0000;		//R5	= 0
-			*(--stack) = (UBYTE)0x0000;		//R6	= 0
-			*(--stack) = (UBYTE)0x0000;		//R7	= 0
-			*(--stack) = (UBYTE)0x0000;		//R8	= 0
-			*(--stack) = (UBYTE)0x0000;		//R9	= 0
-			*(--stack) = (UBYTE)0x0000;		//R10	= 0
-			*(--stack) = (UBYTE)0x0000;		//R11	= 0
-			*(--stack) = (UBYTE)0x0000;		//R12	= 0
-			*(--stack) = (UBYTE)0x0000;		//R13	= 0
-			*(--stack) = (UBYTE)0x0000;		//R14	= 0
-			*(--stack) = (UBYTE)0x0000;		//R15	= 0
-			*(--stack) = (UBYTE)0x0000;		//R16	= 0
-			*(--stack) = (UBYTE)0x0000;		//R17	= 0
-			*(--stack) = (UBYTE)0x0000;		//R18	= 0
-			*(--stack) = (UBYTE)0x0000;		//R19	= 0
-			*(--stack) = (UBYTE)0x0000;		//R20	= 0
-			*(--stack) = (UBYTE)0x0000;		//R21	= 0
-			*(--stack) = (UBYTE)0x0000;		//R22	= 0
-			*(--stack) = (UBYTE)0x0000;		//R23	= 0
-			*(--stack) = (UBYTE)0x0000;		//R24	= 0
-			*(--stack) = (UBYTE)0x0000;		//R25	= 0
-			*(--stack) = (UBYTE)0x0000;		//R26	= 0
-			*(--stack) = (UBYTE)0x0000;		//R27	= 0
-			*(--stack) = (UBYTE)0x0000;		//R28	= 0
-			*(--stack) = (UBYTE)0x0000;		//R29	= 0
-			*(--stack) = (UBYTE)0x0000;		//R30	= 0
-			*(--stack) = (UBYTE)0x0000;		//R31	= 0
-			*(--stack) = (UBYTE)0x0000;		//Flag register
-			// *(--stack) = (UWORD)0x0000;		//Segment crap
-			// *(--stack) = (UWORD)task;		//Return address
-			*(--stack) = (UBYTE)task_high;
-			*(--stack) = (UBYTE)task_low;
+
+			UWORD addr = (UWORD) task;		//task
+			*(stack--) = task_lo8;
+			*(stack--) = task_mid8;
+			*(stack--) = task_hi8;
+
+			*(stack--) = (UBYTE)0x80;		//flags
+
+			*(stack--) = (UBYTE)0x00;		//EIND	= 0
+			*(stack--) = (UBYTE)0x00;		//RAMPZ	= 0
+
+			*(stack--) = (UBYTE)0x00;		//R0	= 0
+			*(stack--) = (UBYTE)0x00;		//R1	= 0
+			*(stack--) = (UBYTE)0x00;		//R2	= 0
+			*(stack--) = (UBYTE)0x00;		//R3	= 0
+			*(stack--) = (UBYTE)0x00;		//R4	= 0
+			*(stack--) = (UBYTE)0x00;		//R5	= 0
+			*(stack--) = (UBYTE)0x00;		//R6	= 0
+			*(stack--) = (UBYTE)0x00;		//R7	= 0
+			*(stack--) = (UBYTE)0x00;		//R8	= 0
+			*(stack--) = (UBYTE)0x00;		//R9	= 0
+			*(stack--) = (UBYTE)0x00;		//R10	= 0
+			*(stack--) = (UBYTE)0x00;		//R11	= 0
+			*(stack--) = (UBYTE)0x00;		//R12	= 0
+			*(stack--) = (UBYTE)0x00;		//R13	= 0
+			*(stack--) = (UBYTE)0x00;		//R14	= 0
+			*(stack--) = (UBYTE)0x00;		//R15	= 0
+			*(stack--) = (UBYTE)0x00;		//R16	= 0
+			*(stack--) = (UBYTE)0x00;		//R17	= 0
+			*(stack--) = (UBYTE)0x00;		//R18	= 0
+			*(stack--) = (UBYTE)0x00;		//R19	= 0
+			*(stack--) = (UBYTE)0x00;		//R20	= 0
+			*(stack--) = (UBYTE)0x00;		//R21	= 0
+			*(stack--) = (UBYTE)0x00;		//R22	= 0
+			*(stack--) = (UBYTE)0x00;		//R23	= 0
+			*(stack--) = (UBYTE)0x00;		//R24	= 0
+			*(stack--) = (UBYTE)0x00;		//R25	= 0
+			*(stack--) = (UBYTE)0x00;		//R26	= 0
+			*(stack--) = (UBYTE)0x00;		//R27	= 0
+			*(stack--) = (UBYTE)0x00;		//R28	= 0
+			*(stack--) = (UBYTE)0x00;		//R29	= 0
+			*(stack--) = (UBYTE)0x00;		//R30	= 0
+			*(stack--) = (UBYTE)0x00;		//R31	= 0
 
 			YKTCBInit(priority, (void *)stack);
 

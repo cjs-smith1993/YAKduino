@@ -18,6 +18,17 @@ YKDispatcher:
 	# save context
 	##########################################################################
 
+	# save flags
+	in		r0,		_SFR_IO_ADDR(SREG)
+	push	r0
+
+	# save EIND and RAMPZ
+	in		r0,		0x3b
+	push	r0
+	in		r0,		0x3c
+	push	r0
+
+	# save registers
 	push	r0
 	push	r1
 	push	r2
@@ -52,25 +63,6 @@ YKDispatcher:
 	push	r31
 
 	##########################################################################
-	# save flags
-	##########################################################################
-
-	in		r0,		_SFR_IO_ADDR(SREG)
-	push	r0
-
-	##########################################################################
-	# push ptr to YKDispatcher2
-	##########################################################################
-
-	ldi		r26,	lo8(YKDispatcher2)
-	ror		r26
-	ldi		r27,	hi8(YKDispatcher2)
-	lsr		r27
-
-	push	r26
-	push	r27
-
-	##########################################################################
 	# store current SP in current TCB
 	##########################################################################
 
@@ -86,9 +78,9 @@ YKDispatcher:
 	std		y+0,	r26
 	std		y+1,	r27
 
-	# ##########################################################################
-	# # load high priority TCB
-	# ##########################################################################
+	##########################################################################
+	# load high priority TCB
+	##########################################################################
 
 	# YKCurTask = YKReadyList
 	lds		r26,	YKReadyList
@@ -97,9 +89,9 @@ YKDispatcher:
 	sts		YKCurTask,		r26
 	sts		YKCurTask+1,	r27
 
-	# ##########################################################################
-	# # load new SP from TCB
-	# ##########################################################################
+	##########################################################################
+	# load new SP from TCB
+	##########################################################################
 
 	# y <- [YKCurTask] = YKCurTask->stack_ptr
 	lds		r28,	YKCurTask
@@ -113,43 +105,11 @@ YKDispatcher:
 	out		0x3d,	r26
 	out		0x3e,	r27
 
-	pop		r31
-	pop		r30
-	ijmp
+	##########################################################################
+	# restore context
+	##########################################################################
 
-	# reti
-
-	# push	ax						;save current context
-	# push	cx
-	# push	dx
-	# push	bx
-	# push	bp
-	# push	si
-	# push	di
-	# push	es
-	# push	ds
-
-	# pushf
-	# mov		bx,	0x0000
-	# push	bx
-	# mov		bx, YKDispatcher2
-	# push	bx
-
-	# mov		bx,	[YKCurTask]			;store current SP in TCB
-	# mov		[bx], sp
-
-	# mov		bx,	[YKReadyList]		;load address of high priority TCB
-	# mov		[YKCurTask], bx
-
-	# mov		sp, [bx]				;load new sp
-
-	# iret
-
-YKDispatcher2:
-	# restore new context
-	pop		r0
-	out		_SFR_IO_ADDR(SREG),		r0
-
+	# restore registers
 	pop		r31
 	pop		r30
 	pop		r29
@@ -183,16 +143,18 @@ YKDispatcher2:
 	pop		r1
 	pop		r0
 
+	# restore RAMPZ and EIND
+	pop		r0
+	out		0x3c,	r0
+	pop		r0
+	out		0x3b,	r0
+
+	# restore flags
+	pop		r0
+	out		_SFR_IO_ADDR(SREG),		r0
+
+	##########################################################################
+	# execute new task
+	##########################################################################
+
 	ret
-
-	# pop		ds						;restore new context
-	# pop		es
-	# pop		di
-	# pop		si
-	# pop		bp
-	# pop		bx
-	# pop		dx
-	# pop		cx
-	# pop		ax
-
-	# ret							;execute new task
