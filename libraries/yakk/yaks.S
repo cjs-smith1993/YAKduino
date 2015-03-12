@@ -75,17 +75,13 @@ YKDispatcher:
 	in		r26,	0x3d
 	in		r27,	0x3e
 
-	# y <- [YKCurTask]
+	# y <- [YKCurTask] = YKCurTask->stack_ptr
 	lds		r28,	YKCurTask
 	lds		r29,	YKCurTask+1
 
-	# z <- [[YKCurTask]] = YKCurTask->stack_ptr
-	ldd		r30,	y+0
-	ldd		r31,	y+1
-
-	# [z] = [[[YKCurTask]]] = *(YKCurTask->stack_ptr) <- SP
-	std		z+0,	r26
-	std		z+1,	r27
+	# [y] = [[YKCurTask]] = *(YKCurTask->stack_ptr) <- SP
+	std		y+0,	r26
+	std		y+1,	r27
 
 	# ##########################################################################
 	# # load high priority TCB
@@ -102,17 +98,13 @@ YKDispatcher:
 	# # load new SP from TCB
 	# ##########################################################################
 
-	# y = [YKCurTask]
+	# y <- [YKCurTask] = YKCurTask->stack_ptr
 	lds		r28,	YKCurTask
 	lds		r29,	YKCurTask+1
 
-	# z = [y] = [[YKCurTask]] = YKCurTask->stack_ptr
-	ldd		r30,	y+0
-	ldd		r31,	y+1
-
-	# x = [z] = [[[YKCurTask]]] = *(YKCurTask->stack_ptr)
-	ldd		r26,	z+0
-	ldd		r27,	z+1
+	# x <- [y] = [[YKCurTask]] = *(YKCurTask->stack_ptr)
+	ldd		r26,	y+0
+	ldd		r27,	y+1
 
 	# SP = z = *(YKCurTask->stack_ptr)
 	out		0x3d,	r26
