@@ -26,33 +26,17 @@ void setup()
 {
 	delay(2000);
 	lcd.clearScreen();
+	delay(1000);
+
+	lcd.printStr("init");
+	lcd.nextLine();
 
 	YKInitialize();
 	YKNewTask(ATask, (void *)&AStk[ASTACKSIZE], 5);
-	YKExitMutex();
-
-	delay(200);
-	lcd.printStr("before");
-	lcd.nextLine();
-	lcd.printNum(*((int*)(YKReadyList->stack_ptr)));
-	lcd.printStr(" ");
-	lcd.printNum(YKReadyList->priority);
-	lcd.nextLine();
-
-	delay(200);
 	YKRun();
-	YKExitMutex();
 
 	delay(200);
-	lcd.printStr("after ");
-	lcd.nextLine();
-	lcd.printNum(*((int*)(YKCurTask->stack_ptr)));
-	lcd.printStr(" ");
-	lcd.printNum(YKCurTask->priority);
-	lcd.nextLine();
-
-	delay(200);
-	lcd.printStr("still here?");
+	lcd.printStr("Failed");
 	lcd.nextLine();
 }
 
@@ -62,35 +46,44 @@ void loop() {
 
 void ATask(void)
 {
-	// delay(500);
-	lcd.printStr("Task A started!");
+	delay(200);
+	lcd.printStr("A started!");
 	lcd.nextLine();
 
-	delay(500);
-	lcd.printStr("Creating low priority task B...");
+	delay(200);
+	lcd.printStr("Create B");
 	lcd.nextLine();
+
 	YKNewTask(BTask, (void *)&BStk[BSTACKSIZE], 7);
 
-	lcd.printStr("Creating task C...");
+	delay(200);
+	lcd.printStr("Create C");
 	lcd.nextLine();
+
 	YKNewTask(CTask, (void *)&CStk[CSTACKSIZE], 2);
 
-	lcd.printStr("Task A is still running! Oh no! Task A was supposed to stop.");
+	delay(200);
+	lcd.printStr("Still A!");
 	lcd.nextLine();
 	exit(0);
 }
 
 void BTask(void)
 {
-	lcd.printStr("Task B started! Oh no! Task B wasn't supposed to run.");
+	delay(200);
+	lcd.printStr("B started :(");
 	lcd.nextLine();
 	exit(0);
 }
 
 void CTask(void)
 {
-	lcd.printStr("start C!");
+	delay(200);
+	lcd.printStr("C started!");
 	lcd.nextLine();
+
+	digitalWrite(13, HIGH);
+
 
 	int count;
 	unsigned numCtxSwitches;
@@ -99,14 +92,15 @@ void CTask(void)
 	numCtxSwitches = YKCtxSwCount;
 	YKExitMutex();
 
-	lcd.printStr("Task C started after ");
 	lcd.printNum(numCtxSwitches);
-	lcd.printStr(" context switches!");
+	lcd.printStr(" ctxSwitches!");
 	lcd.nextLine();
 
 	while (1)
 	{
-		lcd.printStr("Executing in task C.\n");
+		delay(200);
+		lcd.printStr("running task C\n");
+		lcd.nextLine();
 		for(count = 0; count < 5000; count++);
 	}
 }
