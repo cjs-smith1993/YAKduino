@@ -5,8 +5,9 @@ Description: Application code for EE 425 lab 4B (Kernel essentials B)
 */
 
 #include <yakk.h>
-#include "yaku.h"
+#include <yaku.h>
 #include <SerialGraphicLCD.h>
+#include <TimerThree.h>
 
 extern LCD lcd;
 
