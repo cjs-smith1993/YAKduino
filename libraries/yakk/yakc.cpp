@@ -1,6 +1,7 @@
 #include "yakk.h"
 #include "yaku.h"
 #include <SerialGraphicLCD.h>
+#include <TimerThree.h>
 
 LCD lcd;
 
@@ -105,8 +106,8 @@ void YKNewTask(void (* task)(void), void *taskStack, UBYTE priority) {
 			YKNumTasksCreated++;
 
 			stack = (UBYTE *)taskStack;
+			stack--;
 
-			UWORD addr = (UWORD) task;		//task
 			*(stack--) = task_lo8;
 			*(stack--) = task_mid8;
 			*(stack--) = task_hi8;
@@ -256,6 +257,8 @@ void YKRun(void) {
 	if (YKNumTasksCreated > 1) {
 		YKRunning = TRUE;
 		YKExitMutex();
+		Timer3.initialize(500000);
+		Timer3.attachInterrupt(YKTickHandler);
 		YKScheduler();
 	}
 	else {
@@ -308,10 +311,10 @@ void YKTickHandler(void) {
 	TCBptr nextTCB;
 
 	YKEnterMutex();
-	lcd.printStr("\nTICK ");
+	lcd.printStr("TICK ");
 	YKTickNum++;
 	lcd.printNum(YKTickNum);
-	lcd.printStr("\n");
+	lcd.nextLine();
 
 	while (curTCB) {
 		nextTCB = curTCB->next;
