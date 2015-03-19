@@ -28,9 +28,9 @@
 #define EVENT_WAIT_ALL 1
 
 typedef unsigned char UBYTE;
-typedef signed char BYTE;
+typedef unsigned char BYTE;
 typedef unsigned int UWORD;
-typedef signed int WORD;
+typedef unsigned int WORD;
 
 /***********************************************************************
 * TASK CONTROL BLOCKS
