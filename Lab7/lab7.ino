@@ -8,6 +8,9 @@ Description: Application code for EE 425 lab 7 (Event flags)
 #include <yaku.h>
 #include <SerialGraphicLCD.h>
 #include <TimerThree.h>
+#include <mpr121.h>
+#include <i2c.h>
+#include <digits.h>
 
 extern LCD lcd;
 
@@ -37,12 +40,12 @@ void CharTask(void)						/* waits for any events triggered by letter keys */
 
 	while(1) {
 		events = YKEventPend(charEvent,
-							 EVENT_A_KEY | EVENT_B_KEY | EVENT_C_KEY,
-							 EVENT_WAIT_ANY);
+			EVENT_A_KEY | EVENT_B_KEY | EVENT_C_KEY,
+			EVENT_WAIT_ANY);
 
 		if(events == 0) {
 			lcd.printStr("Oops! At least one event should be set "
-						"in return value!\n");
+				"in return value!\n");
 		}
 
 		if(events & EVENT_A_KEY) {
@@ -71,8 +74,8 @@ void AllCharsTask(void)					/* waits for all events triggered by letter keys */
 
 	while(1) {
 		events = YKEventPend(charEvent,
-							 EVENT_A_KEY | EVENT_B_KEY | EVENT_C_KEY,
-							 EVENT_WAIT_ALL);
+			EVENT_A_KEY | EVENT_B_KEY | EVENT_C_KEY,
+			EVENT_WAIT_ALL);
 		// To be reset by WaitForAny task
 
 		if(events != 0) {
@@ -92,8 +95,8 @@ void AllNumsTask(void)					/* waits for events triggered by number keys */
 
 	while(1) {
 		events = YKEventPend(numEvent,
-							 EVENT_1_KEY | EVENT_2_KEY | EVENT_3_KEY,
-							 EVENT_WAIT_ALL);
+			EVENT_1_KEY | EVENT_2_KEY | EVENT_3_KEY,
+			EVENT_WAIT_ALL);
 
 		if(events != (EVENT_1_KEY | EVENT_2_KEY | EVENT_3_KEY)) {
 			lcd.printStr("Oops! All events should be set in return value!\n");
@@ -149,13 +152,25 @@ void STask(void)						/* tracks statistics */
 
 void setup()
 {
-	EICRB = (EICRB & ~((1 << ISC40) | (1 << ISC41))) | (RISING << ISC40);
-	EIMSK |= (1 << INT4);
 
 	pinMode(2, INPUT);
 	pinMode(13, OUTPUT);
 
 	Serial.begin(115200);
+
+	//output on ADC4 (PC4, SDA)
+	DDRC |= 0b00010011;
+	// Pull-ups on I2C Bus
+	PORTC = 0b00110000;
+	// initalize I2C bus. Wiring lib not used.
+	i2cInit();
+
+	delay(100);
+	// initialize mpr121
+	mpr121QuickConfig();
+
+	EICRB = (EICRB & ~((1 << ISC40) | (1 << ISC41))) | (FALLING << ISC40);
+	EIMSK |= (1 << INT4);
 
 	delay(2000);
 	lcd.clearScreen();
@@ -190,24 +205,58 @@ ISR(TIMER3_OVF_vect, ISR_NOBLOCK) {
 	YKExitISR();
 }
 
-void resetHandler() {
-	exit(0);
+void buttonHandler() {
+	int num = getNumber();
+
+	if(num == 7) {
+		YKEventSet(charEvent, EVENT_A_KEY);
+	}
+	else if(num == 8) {
+		YKEventSet(charEvent, EVENT_B_KEY);
+	}
+	else if(num == 9) {
+		YKEventSet(charEvent, EVENT_C_KEY);
+	}
+	else if(num == 5) {
+		YKEventSet(charEvent, EVENT_A_KEY | EVENT_B_KEY | EVENT_C_KEY);
+	}
+	else if(num == 1) {
+		YKEventSet(numEvent, EVENT_1_KEY);
+	}
+	else if(num == 2) {
+		YKEventSet(numEvent, EVENT_2_KEY);
+	}
+	else if(num == 3) {
+		YKEventSet(numEvent, EVENT_3_KEY);
+	}
 }
 
-void buttonHandler() {
-	char c;
-	c = 'd';
+int getNumber() {
+	int i = 0;
+	int num = 0;
+	uint16_t touchstatus;
 
-	if(c == 'a') YKEventSet(charEvent, EVENT_A_KEY);
-	else if(c == 'b') YKEventSet(charEvent, EVENT_B_KEY);
-	else if(c == 'c') YKEventSet(charEvent, EVENT_C_KEY);
-	else if(c == 'd') YKEventSet(charEvent, EVENT_A_KEY | EVENT_B_KEY | EVENT_C_KEY);
-	else if(c == '1') YKEventSet(numEvent, EVENT_1_KEY);
-	else if(c == '2') YKEventSet(numEvent, EVENT_2_KEY);
-	else if(c == '3') YKEventSet(numEvent, EVENT_3_KEY);
-	else {
-		lcd.printStr("\nKEYPRESS (");
-		lcd.printNum(c);
-		lcd.printStr(") IGNORED\n");
-	}
+	touchstatus = mpr121Read(0x01) << 8;
+	touchstatus |= mpr121Read(0x00);
+
+	if (touchstatus & (1<<SEVEN))
+	num = 7;
+	else if (touchstatus & (1<<FOUR))
+	num = 4;
+	else if (touchstatus & (1<<ONE))
+	num = 1;
+	else if (touchstatus & (1<<EIGHT))
+	num = 8;
+	else if (touchstatus & (1<<FIVE))
+	num = 5;
+	else if (touchstatus & (1<<TWO))
+	num = 2;
+	else if (touchstatus & (1<<NINE))
+	num = 9;
+	else if (touchstatus & (1<<SIX))
+	num = 6;
+	else if (touchstatus & (1<<THREE))
+	num = 3;
+
+	return num;
 }
