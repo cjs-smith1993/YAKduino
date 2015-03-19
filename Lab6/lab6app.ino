@@ -152,8 +152,8 @@ void STask(void)					/* tracks statistics */
 	max = YKIdleCount / 25;
 	YKIdleCount = 0;
 
-	YKNewTask(BTask, (void *) &BTaskStk[TASK_STACK_SIZE], 10);
-	YKNewTask(ATask, (void *) &ATaskStk[TASK_STACK_SIZE], 20);
+	YKNewTask(BTask, (void *) &BTaskStk[TASK_STACK_SIZE], 1);
+	YKNewTask(ATask, (void *) &ATaskStk[TASK_STACK_SIZE], 2);
 
 	while (1)
 	{
@@ -198,7 +198,7 @@ void setup(void)
 	/* create queue, at least one user task, etc. */
 	GlobalFlag = 0;
 	MsgQPtr = YKQCreate(MsgQ, MSGQSIZE);
-	YKNewTask(STask, (void *) &STaskStk[TASK_STACK_SIZE], 30);
+	YKNewTask(STask, (void *) &STaskStk[TASK_STACK_SIZE], 3);
 
 	YKRun();
 }
