@@ -5,30 +5,30 @@ Description: Application code for EE 425 lab 7 (Event flags)
 */
 
 #include <yakk.h>
-#include "yaku.h"
+#include <yaku.h>
 #include <SerialGraphicLCD.h>
 
 extern LCD lcd;
 
-#define EVENT_A_KEY  0x1
-#define EVENT_B_KEY  0x2
-#define EVENT_C_KEY  0x4
+#define EVENT_A_KEY		0x1
+#define EVENT_B_KEY		0x2
+#define EVENT_C_KEY		0x4
 
-#define EVENT_1_KEY  0x1
-#define EVENT_2_KEY  0x2
-#define EVENT_3_KEY  0x4
+#define EVENT_1_KEY		0x1
+#define EVENT_2_KEY		0x2
+#define EVENT_3_KEY		0x4
 
-#define TASK_STACK_SIZE   512         /* stack size in words */
+#define TASK_STACK_SIZE	512				/* stack size in words */
 
 YKEVENT *charEvent;
 YKEVENT *numEvent;
 
-int CharTaskStk[TASK_STACK_SIZE];     /* a stack for each task */
+int CharTaskStk[TASK_STACK_SIZE];		/* a stack for each task */
 int AllCharsTaskStk[TASK_STACK_SIZE];
 int AllNumsTaskStk[TASK_STACK_SIZE];
 int STaskStk[TASK_STACK_SIZE];
 
-void CharTask(void)        /* waits for any events triggered by letter keys */
+void CharTask(void)						/* waits for any events triggered by letter keys */
 {
 	unsigned events;
 
@@ -62,7 +62,7 @@ void CharTask(void)        /* waits for any events triggered by letter keys */
 }
 
 
-void AllCharsTask(void)    /* waits for all events triggered by letter keys */
+void AllCharsTask(void)					/* waits for all events triggered by letter keys */
 {
 	unsigned events;
 
@@ -83,7 +83,7 @@ void AllCharsTask(void)    /* waits for all events triggered by letter keys */
 }
 
 
-void AllNumsTask(void)     /* waits for events triggered by number keys */
+void AllNumsTask(void)					/* waits for events triggered by number keys */
 {
 	unsigned events;
 
@@ -105,7 +105,7 @@ void AllNumsTask(void)     /* waits for events triggered by number keys */
 }
 
 
-void STask(void)           /* tracks statistics */
+void STask(void)						/* tracks statistics */
 {
 	unsigned max, switchCount, idleCount;
 	int tmp;
