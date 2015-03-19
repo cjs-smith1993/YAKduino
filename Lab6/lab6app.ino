@@ -74,15 +74,15 @@ void ATask(void)					/* processes data in messages */
 			max = tmp->data;
 
 		/* output min, max, tick values */
-		lcd.printStr("Ticks: ");
-		lcd.printNum(count);
-		lcd.printStr("\t");
-		lcd.printStr("Min: ");
-		lcd.printNum(min);
-		lcd.printStr("\t");
-		lcd.printStr("Max: ");
-		lcd.printNum(max);
-		lcd.nextLine();
+		// lcd.printStr("Ticks: ");
+		// lcd.printNum(count);
+		// lcd.printStr("\t");
+		// lcd.printStr("Min: ");
+		// lcd.printNum(min);
+		// lcd.printStr("\t");
+		// lcd.printStr("Max: ");
+		// lcd.printNum(max);
+		// lcd.nextLine();
 	}
 }
 
@@ -193,7 +193,7 @@ void setup(void)
 	delay(1000);
 
 	YKInitialize();
-	YKTickPeriod = 50000L;
+	YKTickPeriod = 5000L;
 
 	/* create queue, at least one user task, etc. */
 	GlobalFlag = 0;
