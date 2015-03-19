@@ -7,6 +7,7 @@ Description: Application code for EE 425 lab 7 (Event flags)
 #include <yakk.h>
 #include <yaku.h>
 #include <SerialGraphicLCD.h>
+#include <TimerThree.h>
 
 extern LCD lcd;
 
