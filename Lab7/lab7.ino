@@ -147,29 +147,67 @@ void STask(void)						/* tracks statistics */
 	}
 }
 
-
 void setup()
 {
-	delay(5000);
+	EICRB = (EICRB & ~((1 << ISC40) | (1 << ISC41))) | (RISING << ISC40);
+	EIMSK |= (1 << INT4);
+
+	pinMode(2, INPUT);
+	pinMode(13, OUTPUT);
+
+	Serial.begin(115200);
+
+	delay(2000);
 	lcd.clearScreen();
+	delay(1000);
 
 	YKInitialize();
+	YKTickPeriod = 5000L;
 
 	charEvent = YKEventCreate(0);
 	numEvent = YKEventCreate(0);
 	YKNewTask(STask, (void *) &STaskStk[TASK_STACK_SIZE], 0);
-
-	lcd.printStr("starting kernel");
-	lcd.nextLine();
-	delay(200);
 	YKRun();
-	delay(200);
-	lcd.printStr("are you still here?");
-	lcd.nextLine();
 }
 
 void loop() {
-	// lcd.setY(50);
-	// lcd.printStr("1");
-	// delay(2000);
+
+}
+
+ISR(INT4_vect, ISR_NOBLOCK) {
+	YKEnterISR();
+	sei();
+	buttonHandler();
+	cli();
+	YKExitISR();
+}
+
+ISR(TIMER3_OVF_vect, ISR_NOBLOCK) {
+	YKEnterISR();
+	sei();
+	YKTickHandler();
+	cli();
+	YKExitISR();
+}
+
+void resetHandler() {
+	exit(0);
+}
+
+void buttonHandler() {
+	char c;
+	c = 'd';
+
+	if(c == 'a') YKEventSet(charEvent, EVENT_A_KEY);
+	else if(c == 'b') YKEventSet(charEvent, EVENT_B_KEY);
+	else if(c == 'c') YKEventSet(charEvent, EVENT_C_KEY);
+	else if(c == 'd') YKEventSet(charEvent, EVENT_A_KEY | EVENT_B_KEY | EVENT_C_KEY);
+	else if(c == '1') YKEventSet(numEvent, EVENT_1_KEY);
+	else if(c == '2') YKEventSet(numEvent, EVENT_2_KEY);
+	else if(c == '3') YKEventSet(numEvent, EVENT_3_KEY);
+	else {
+		lcd.printStr("\nKEYPRESS (");
+		lcd.printNum(c);
+		lcd.printStr(") IGNORED\n");
+	}
 }
