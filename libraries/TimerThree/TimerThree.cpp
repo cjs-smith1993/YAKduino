@@ -16,10 +16,10 @@
 
 TimerThree Timer3;              // preinstatiate
 
-ISR(TIMER3_OVF_vect)          // interrupt service routine that wraps a user defined function supplied by attachInterrupt
-{
-  Timer3.isrCallback();
-}
+// ISR(TIMER3_OVF_vect)          // interrupt service routine that wraps a user defined function supplied by attachInterrupt
+// {
+//   Timer3.isrCallback();
+// }
 
 void TimerThree::initialize(long microseconds)
 {
@@ -77,7 +77,7 @@ void TimerThree::attachInterrupt(void (*isr)(), long microseconds)
   if(microseconds > 0) setPeriod(microseconds);
   isrCallback = isr;                                       // register the user's callback with the real ISR
   TIMSK3 = _BV(TOIE1);                                     // sets the timer overflow interrupt enable bit
-  sei();                                                   // ensures that interrupts are globally enabled
+  // sei();                                                   // ensures that interrupts are globally enabled
   start();
 }
 
