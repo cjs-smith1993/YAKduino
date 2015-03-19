@@ -13,12 +13,12 @@ extern LCD lcd;
 
 #define TASK_STACK_SIZE		512		/* stack size in words */
 #define MSGQSIZE			10
-#define MSGARRAYSIZE      20
+#define MSGARRAYSIZE		20
 
 struct msg
 {
-    int tick;
-    int data;
+	int tick;
+	int data;
 };
 
 struct msg MsgArray[MSGARRAYSIZE];	/* buffers for message content */
