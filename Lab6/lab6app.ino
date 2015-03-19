@@ -49,7 +49,7 @@ void ATask(void)					/* processes data in messages */
 		if (tmp->tick != count+1)
 		{
 			lcd.printStr("\n\n\n----------------");
-			lcd.printStr("! Dropped msgs: tick ", 21);
+			lcd.printStr("! Dropped msgs: tick ");
 			lcd.printStr("----------------\n\n\n");
 
 			if (tmp->tick - (count+1) > 1) {
@@ -74,13 +74,13 @@ void ATask(void)					/* processes data in messages */
 			max = tmp->data;
 
 		/* output min, max, tick values */
-		lcd.printStr("Ticks: ", 7);
+		lcd.printStr("Ticks: ");
 		lcd.printNum(count);
-		lcd.printStr("\t", 1);
-		lcd.printStr("Min: ", 5);
+		lcd.printStr("\t");
+		lcd.printStr("Min: ");
 		lcd.printNum(min);
-		lcd.printStr("\t", 1);
-		lcd.printStr("Max: ", 5);
+		lcd.printStr("\t");
+		lcd.printStr("Max: ");
 		lcd.printNum(max);
 		lcd.nextLine();
 	}
