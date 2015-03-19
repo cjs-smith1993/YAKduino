@@ -4,12 +4,22 @@ Revision date: 4 November 2009
 Description: Application code for EE 425 lab 6 (Message queues)
 */
 
-#include "../clib/clib.h"
-#include "../kernel/yakk.h"			/* contains kernel definitions */
-#include "lab6defs.h"				/* contains definitions for this lab */
+#include <yakk.h>
+#include <yaku.h>
+#include <SerialGraphicLCD.h>
+#include <TimerThree.h>
+
+extern LCD lcd;
 
 #define TASK_STACK_SIZE		512		/* stack size in words */
 #define MSGQSIZE			10
+#define MSGARRAYSIZE      20
+
+struct msg
+{
+    int tick;
+    int data;
+};
 
 struct msg MsgArray[MSGARRAYSIZE];	/* buffers for message content */
 
@@ -38,19 +48,19 @@ void ATask(void)					/* processes data in messages */
 		/* check sequence count in msg; were msgs dropped? */
 		if (tmp->tick != count+1)
 		{
-			printString("\n\n\n----------------");
-			print("! Dropped msgs: tick ", 21);
-			printString("----------------\n\n\n");
+			lcd.printStr("\n\n\n----------------");
+			lcd.printStr("! Dropped msgs: tick ", 21);
+			lcd.printStr("----------------\n\n\n");
 
 			if (tmp->tick - (count+1) > 1) {
-				printInt(count+1);
-				printChar('-');
-				printInt(tmp->tick-1);
-				printNewLine();
+				lcd.printNum(count+1);
+				lcd.printStr("-");
+				lcd.printNum(tmp->tick-1);
+				lcd.nextLine();
 			}
 			else {
-				printInt(tmp->tick-1);
-				printNewLine();
+				lcd.printNum(tmp->tick-1);
+				lcd.nextLine();
 			}
 		}
 
@@ -64,15 +74,15 @@ void ATask(void)					/* processes data in messages */
 			max = tmp->data;
 
 		/* output min, max, tick values */
-		print("Ticks: ", 7);
-		printInt(count);
-		print("\t", 1);
-		print("Min: ", 5);
-		printInt(min);
-		print("\t", 1);
-		print("Max: ", 5);
-		printInt(max);
-		printNewLine();
+		lcd.printStr("Ticks: ", 7);
+		lcd.printNum(count);
+		lcd.printStr("\t", 1);
+		lcd.printStr("Min: ", 5);
+		lcd.printNum(min);
+		lcd.printStr("\t", 1);
+		lcd.printStr("Max: ", 5);
+		lcd.printNum(max);
+		lcd.nextLine();
 	}
 }
 
@@ -113,15 +123,15 @@ void BTask(void)					/* saturates the CPU for 5 ticks */
 				}
 				if (!flag)
 				{
-					printChar('.'); /* output a marker for each prime */
+					lcd.printStr("."); /* output a marker for each prime"*/
 					if (++chcount > 75)
 					{
-						printNewLine();
+						lcd.nextLine();
 						chcount = 0;
 					}
 				}
 			}
-			printNewLine();
+			lcd.nextLine();
 			chcount = 0;
 			GlobalFlag = 0;			/* clear flag */
 		}
@@ -134,8 +144,8 @@ void STask(void)					/* tracks statistics */
 	int tmp;
 
 	YKDelayTask(1);
-	printString("Welcome to the YAK kernel\r\n");
-	printString("Determining CPU capacity\r\n");
+	lcd.printStr("Welcome to the YAK kernel\r\n");
+	lcd.printStr("Determining CPU capacity\r\n");
 	YKDelayTask(1);
 	YKIdleCount = 0;
 	YKDelayTask(5);
@@ -154,12 +164,12 @@ void STask(void)					/* tracks statistics */
 		idleCount = YKIdleCount;
 		YKExitMutex();
 
-		printString("<<<<< Context switches: ");
-		printInt((int)switchCount);
-		printString(", CPU usage: ");
+		lcd.printStr("<<<<< Context switches: ");
+		lcd.printNum((int)switchCount);
+		lcd.printStr(", CPU usage: ");
 		tmp = (int) (idleCount/max);
-		printInt(100-tmp);
-		printString("% >>>>>\r\n");
+		lcd.printNum(100-tmp);
+		lcd.printStr("% >>>>>\r\n");
 
 		YKEnterMutex();
 		YKCtxSwCount = 0;
@@ -168,9 +178,22 @@ void STask(void)					/* tracks statistics */
 	}
 }
 
-void main(void)
+void setup(void)
 {
+	EICRB = (EICRB & ~((1 << ISC40) | (1 << ISC41))) | (RISING << ISC40);
+	EIMSK |= (1 << INT4);
+
+	pinMode(2, INPUT);
+	pinMode(13, OUTPUT);
+
+	Serial.begin(115200);
+
+	delay(2000);
+	lcd.clearScreen();
+	delay(1000);
+
 	YKInitialize();
+	YKTickPeriod = 50000L;
 
 	/* create queue, at least one user task, etc. */
 	GlobalFlag = 0;
@@ -178,4 +201,23 @@ void main(void)
 	YKNewTask(STask, (void *) &STaskStk[TASK_STACK_SIZE], 30);
 
 	YKRun();
+}
+
+void loop(void) {
+
+}
+
+ISR(INT4_vect, ISR_NOBLOCK) {
+	digitalWrite(13, HIGH);
+	lcd.clearScreen();
+	Serial.print("test\n");
+	YKSemPost(NSemPtr);
+}
+
+ISR(TIMER3_OVF_vect, ISR_NOBLOCK) {
+	YKEnterISR();
+	sei();
+	YKTickHandler();
+	cli();
+	YKExitISR();
 }
