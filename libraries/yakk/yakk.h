@@ -124,6 +124,7 @@ extern int YKIdleStack[IDLE_STACK_SIZE];
 extern int YKCtxSwCount;
 extern int YKIdleCount;
 extern int YKTickNum;
+extern long long YKTickPeriod;
 extern int YKNumTasksCreated;
 extern int YKInterruptLevel;
 extern int YKRunning;

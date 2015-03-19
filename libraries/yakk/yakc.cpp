@@ -29,6 +29,7 @@ int YKIdleStack[IDLE_STACK_SIZE];
 int YKCtxSwCount;
 int YKIdleCount;
 int YKTickNum;
+long long YKTickPeriod;
 int YKNumTasksCreated;
 int YKInterruptLevel;
 int YKRunning;
@@ -44,6 +45,7 @@ void YKInitialize(void) {
 	YKCtxSwCount = 0;
 	YKIdleCount = 0;
 	YKTickNum = 0;
+	YKTickPeriod = 0L;
 	YKNumTasksCreated = 0;
 	YKRunning = 0;
 	YKInterruptLevel = 0;
@@ -257,7 +259,7 @@ void YKRun(void) {
 	if (YKNumTasksCreated > 1) {
 		YKRunning = TRUE;
 		YKExitMutex();
-		Timer3.initialize(500000);
+		Timer3.initialize(YKTickPeriod);
 		Timer3.attachInterrupt(YKTickHandler);
 		YKScheduler();
 	}
@@ -311,10 +313,7 @@ void YKTickHandler(void) {
 	TCBptr nextTCB;
 
 	YKEnterMutex();
-	lcd.printStr("TICK ");
 	YKTickNum++;
-	lcd.printNum(YKTickNum);
-	lcd.nextLine();
 
 	while (curTCB) {
 		nextTCB = curTCB->next;
@@ -330,10 +329,6 @@ void YKTickHandler(void) {
 		curTCB = nextTCB;
 	}
 	YKExitMutex();
-
-	if (YKTickNum > 20) {
-		// exit(0);
-	}
 }
 
 YKSemPtr YKSemCreate(int count) {
