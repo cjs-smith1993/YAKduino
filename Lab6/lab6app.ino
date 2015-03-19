@@ -208,7 +208,11 @@ void loop(void) {
 }
 
 ISR(INT4_vect, ISR_NOBLOCK) {
-	GlobalFlag = 1;
+	YKEnterISR();
+	sei();
+	buttonHandler();
+	cli();
+	YKExitISR();
 }
 
 ISR(TIMER3_OVF_vect, ISR_NOBLOCK) {
@@ -239,6 +243,6 @@ void mytick(void)
 	next = 0;
 }
 
-void keyboardHandler() {
+void buttonHandler() {
 	GlobalFlag = 1;
 }
