@@ -13,30 +13,36 @@ SparkFun Electronics
 LCD::LCD()
 {
 	Serial1.begin(115200);
+  Serial.begin(115200);
 
 }
 //-------------------------------------------------------------------------------------------
 void LCD::printStr(char Str[78])//26 characters is the length of one line on the LCD
 {
 	Serial1.print(Str);
+  Serial.print(Str);
 	//if you need to print longer strings, change the size of this array here and in the .h file
 }
 //-------------------------------------------------------------------------------------------
 void LCD::printNum(int num)//can't convert ints to strings so this is just for printing ints
 {
 	Serial1.print(num);
+  Serial.print(num);
 }
 //-------------------------------------------------------------------------------------------
 void LCD::nextLine()//prints new line
 {
 	Serial1.println();
+  Serial.println();
 }
 //-------------------------------------------------------------------------------------------
 void LCD::clearScreen()
 {
   //clears the screen, you will use this a lot!
   Serial1.write(0x7C);
+  Serial.write(0x7C);
   Serial1.write((byte)0); //CTRL @
+  Serial.write((byte)0); //CTRL @
   //can't send LCD.write(0) or LCD.write(0x00) because it's interprestted as a NULL
 }
 //-------------------------------------------------------------------------------------------
@@ -44,30 +50,40 @@ void LCD::toggleReverseMode()
 {
   //Everything that was black is now white and vise versa
   Serial1.write(0x7C);
+  Serial.write(0x7C);
   Serial1.write(0x12); //CTRL r
+  Serial.write(0x12); //CTRL r
 }
 //-------------------------------------------------------------------------------------------
 void LCD::toggleSplash()
 {
   //turns the splash screen on and off, the 1 second delay at startup stays either way.
   Serial1.write(0x7C);
+  Serial.write(0x7C);
   Serial1.write(0x13); //CTRL s
+  Serial.write(0x13); //CTRL s
 }
 //-------------------------------------------------------------------------------------------
 void LCD::setBacklight(byte duty)
 {
   //changes the back light intensity, range is 0-100.
   Serial1.write(0x7C);
+  Serial.write(0x7C);
   Serial1.write(0x02); //CTRL b
+  Serial.write(0x02); //CTRL b
   Serial1.write(duty); //send a value of 0 - 100
+  Serial.write(duty); //send a value of 0 - 100
 }
 //-------------------------------------------------------------------------------------------
 void LCD::setBaud(byte baud)
 {
   //changes the baud rate.
   Serial1.write(0x7C);
+  Serial.write(0x7C);
   Serial1.write(0x07); //CTRL g
+  Serial.write(0x07); //CTRL g
   Serial1.write(baud); //send a value of 49 - 54
+  Serial.write(baud); //send a value of 49 - 54
   delay(100);
 
 /*
@@ -83,32 +99,44 @@ void LCD::setBaud(byte baud)
   if(baud == 49)
   {
 	Serial1.end();
+  Serial.end();
 	Serial1.begin(4800);
+  Serial.begin(4800);
   }
   if(baud == 50)
   {
 	Serial1.end();
+  Serial.end();
 	Serial1.begin(9600);
+  Serial.begin(9600);
   }
   if(baud == 51)
   {
 	Serial1.end();
+  Serial.end();
 	Serial1.begin(19200);
+  Serial.begin(19200);
   }
   if(baud == 52)
   {
 	Serial1.end();
+  Serial.end();
 	Serial1.begin(38400);
+  Serial.begin(38400);
   }
   if(baud == 53)
   {
 	Serial1.end();
+  Serial.end();
 	Serial1.begin(57600);
+  Serial.begin(57600);
   }
   if(baud == 54)
   {
 	Serial1.end();
+  Serial.end();
 	Serial1.begin(115200);
+  Serial.begin(115200);
   }
 }
 //-------------------------------------------------------------------------------------------
@@ -119,43 +147,73 @@ void LCD::restoreDefaultBaud()
 
 
 Serial1.end();//end the transmission at whatever the current baud rate is
+Serial.end();//end the transmission at whatever the current baud rate is
 
 //cycle through every other possible buad rate and attemp to change the rate back to 115200
 Serial1.begin(4800);
+Serial.begin(4800);
 Serial1.write(0x7C);
+Serial.write(0x7C);
 Serial1.write(0x07);
+Serial.write(0x07);
 Serial1.write(54);//set back to 115200
+Serial.write(54);//set back to 115200
 Serial1.end();
+Serial.end();
 
 Serial1.begin(9600);
+Serial.begin(9600);
 Serial1.write(0x7C);
+Serial.write(0x7C);
 Serial1.write(0x07);
+Serial.write(0x07);
 Serial1.write(54);//set back to 115200
+Serial.write(54);//set back to 115200
 Serial1.end();
+Serial.end();
 
 Serial1.begin(19200);
+Serial.begin(19200);
 Serial1.write(0x7C);
+Serial.write(0x7C);
 Serial1.write(0x07);
+Serial.write(0x07);
 Serial1.write(54);//set back to 115200
+Serial.write(54);//set back to 115200
 Serial1.end();
+Serial.end();
 
 Serial1.begin(38400);
+Serial.begin(38400);
 Serial1.write(0x7C);
+Serial.write(0x7C);
 Serial1.write(0x07);
+Serial.write(0x07);
 Serial1.write(54);//set back to 115200
+Serial.write(54);//set back to 115200
 Serial1.end();
+Serial.end();
 
 Serial1.begin(57600);
+Serial.begin(57600);
 Serial1.write(0x7C);
+Serial.write(0x7C);
 Serial1.write(0x07);
+Serial.write(0x07);
 Serial1.write(54);//set back to 115200
+Serial.write(54);//set back to 115200
 Serial1.end();
+Serial.end();
 
 Serial1.begin(115200);
+Serial.begin(115200);
 delay(10);
 Serial1.write(0x7C);
+Serial.write(0x7C);
 Serial1.write((byte)0); //clearScreen
+Serial.write((byte)0); //clearScreen
 Serial1.print("Baud restored to 115200!");
+Serial.print("Baud restored to 115200!");
 delay(5000);
 
 }
@@ -164,15 +222,20 @@ void LCD::demo()
 {
   //Demonstartes all the capabilities of the LCD
   Serial1.write(0x7C);
+  Serial.write(0x7C);
   Serial1.write(0x04);//CTRL d
+  Serial.write(0x04);//CTRL d
 }
 //-------------------------------------------------------------------------------------------
 void LCD::setX(byte posX) //0-127 or 0-159 pixels
 {
   //Set the X position
   Serial1.write(0x7C);
+  Serial.write(0x7C);
   Serial1.write(0x18);//CTRL x
+  Serial.write(0x18);//CTRL x
   Serial1.write(posX);
+  Serial.write(posX);
 
 //characters are 8 pixels tall x 6 pixels wide
 //The top left corner of a char is where the x/y value will start its print
@@ -198,29 +261,43 @@ void LCD::setY(byte posY)//0-63 or 0-127 pixels
 {
   //Set the y position
   Serial1.write(0x7C);
+  Serial.write(0x7C);
   Serial1.write(0x19);//CTRL y
+  Serial.write(0x19);//CTRL y
   Serial1.write(posY);
+  Serial.write(posY);
 
 }
 //-------------------------------------------------------------------------------------------
 void LCD::setHome()
 {
   Serial1.write(0x7C);
+  Serial.write(0x7C);
   Serial1.write(0x18);
+  Serial.write(0x18);
   Serial1.write((byte)0);//set x back to 0
+  Serial.write((byte)0);//set x back to 0
 
   Serial1.write(0x7C);
+  Serial.write(0x7C);
   Serial1.write(0x19);
+  Serial.write(0x19);
   Serial1.write((byte)0);//set y back to 0
+  Serial.write((byte)0);//set y back to 0
 }
 //-------------------------------------------------------------------------------------------
 void LCD::setPixel(byte x, byte y, byte set)
 {
   Serial1.write(0x7C);
+  Serial.write(0x7C);
   Serial1.write(0x10);//CTRL p
+  Serial.write(0x10);//CTRL p
   Serial1.write(x);
+  Serial.write(x);
   Serial1.write(y);
+  Serial.write(y);
   Serial1.write(0x01);
+  Serial.write(0x01);
   delay(10);
 }
 //-------------------------------------------------------------------------------------------
@@ -228,12 +305,19 @@ void LCD::drawLine(byte x1, byte y1, byte x2, byte y2, byte set)
 {
   //draws a line from two given points. You can set and reset just as the pixel function.
   Serial1.write(0x7C);
+  Serial.write(0x7C);
   Serial1.write(0x0C);//CTRL l
+  Serial.write(0x0C);//CTRL l
   Serial1.write(x1);
+  Serial.write(x1);
   Serial1.write(y1);
+  Serial.write(y1);
   Serial1.write(x2);
+  Serial.write(x2);
   Serial1.write(y2);
+  Serial.write(y2);
   Serial1.write(0x01);
+  Serial.write(0x01);
   delay(10);
 
 }
@@ -242,12 +326,19 @@ void LCD::drawBox(byte x1, byte y1, byte x2, byte y2, byte set)
 {
   //draws a box from two given points. You can set and reset just as the pixel function.
   Serial1.write(0x7C);
+  Serial.write(0x7C);
   Serial1.write(0x0F);//CTRL o
+  Serial.write(0x0F);//CTRL o
   Serial1.write(x1);
+  Serial.write(x1);
   Serial1.write(y1);
+  Serial.write(y1);
   Serial1.write(x2);
+  Serial.write(x2);
   Serial1.write(y2);
+  Serial.write(y2);
   Serial1.write(0x01);
+  Serial.write(0x01);
   delay(10);
 
 }
@@ -258,11 +349,17 @@ void LCD::drawCircle(byte x, byte y, byte rad, byte set)
 //Circles can be drawn off-grid, but only those pixels that fall within the
 //display boundaries will be written.
   Serial1.write(0x7C);
+  Serial.write(0x7C);
   Serial1.write(0x03);//CTRL c
+  Serial.write(0x03);//CTRL c
   Serial1.write(x);
+  Serial.write(x);
   Serial1.write(y);
+  Serial.write(y);
   Serial1.write(rad);
+  Serial.write(rad);
   Serial1.write(0x01);
+  Serial.write(0x01);
   delay(10);
 
 }
@@ -271,11 +368,17 @@ void LCD::eraseBlock(byte x1, byte y1, byte x2, byte y2)
 {
   //This is just like the draw box command, except the contents of the box are erased to the background color
   Serial1.write(0x7C);
+  Serial.write(0x7C);
   Serial1.write(0x05);//CTRL e
+  Serial.write(0x05);//CTRL e
   Serial1.write(x1);
+  Serial.write(x1);
   Serial1.write(y1);
+  Serial.write(y1);
   Serial1.write(x2);
+  Serial.write(x2);
   Serial1.write(y2);
+  Serial.write(y2);
   delay(10);
 
 }
