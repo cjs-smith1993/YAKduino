@@ -208,16 +208,37 @@ void loop(void) {
 }
 
 ISR(INT4_vect, ISR_NOBLOCK) {
-	digitalWrite(13, HIGH);
-	lcd.clearScreen();
-	Serial.print("test\n");
-	YKSemPost(NSemPtr);
+	GlobalFlag = 1;
 }
 
 ISR(TIMER3_OVF_vect, ISR_NOBLOCK) {
 	YKEnterISR();
 	sei();
 	YKTickHandler();
+	mytick();
 	cli();
 	YKExitISR();
+}
+
+void resetHandler() {
+	exit(0);
+}
+
+void mytick(void)
+{
+	static int next = 0;
+	static int data = 0;
+
+	/* create a message with tick (sequence #) and pseudo-random data */
+	MsgArray[next].tick = YKTickNum;
+	data = (data + 89) % 100;
+	MsgArray[next].data = data;
+	if (YKQPost(MsgQPtr, (void *) &(MsgArray[next])) == 0)
+	lcd.printStr("  TickISR: queue overflow! \n");
+	else if (++next >= MSGARRAYSIZE)
+	next = 0;
+}
+
+void keyboardHandler() {
+	GlobalFlag = 1;
 }
