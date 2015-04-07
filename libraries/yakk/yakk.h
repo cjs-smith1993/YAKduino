@@ -135,7 +135,7 @@ extern int YKRunning;
 
 void YKInitialize(void);
 void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority);
-void YKIdleTask(void *data);
+void YKIdleTask(void);
 void YKTCBInit(UBYTE priority, void *stack);
 void YKAddTCBToList(TCBptr *list, TCBptr tcb);
 void YKRemoveTCBFromList(TCBptr *list, TCBptr tcb);

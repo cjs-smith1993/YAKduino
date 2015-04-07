@@ -90,7 +90,7 @@ void YKInitialize(void) {
 	}
 
 	//Create idle task
-	YKNewTask((void *)YKIdleTask, (void *)&YKIdleStack[IDLE_STACK_SIZE], IDLE_PRIO);
+	YKNewTask(YKIdleTask, (void *)&YKIdleStack[IDLE_STACK_SIZE], IDLE_PRIO);
 }
 
 void YKNewTask(void (* task)(void), void *taskStack, UBYTE priority) {
@@ -176,8 +176,7 @@ void YKNewTask(void (* task)(void), void *taskStack, UBYTE priority) {
 	}
 }
 
-void YKIdleTask(void *data) {
-	data = data;
+void YKIdleTask() {
 	while (1) {
 		YKEnterMutex();
 		YKIdleCount++;
