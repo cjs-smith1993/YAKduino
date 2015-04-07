@@ -22,12 +22,6 @@ YKDispatcher:
 	in		r0,		_SFR_IO_ADDR(SREG)
 	push	r0
 
-	# save EIND and RAMPZ
-	in		r0,		0x3b
-	push	r0
-	in		r0,		0x3c
-	push	r0
-
 	# save registers
 	push	r0
 	push	r1
@@ -142,12 +136,6 @@ YKDispatcher:
 	pop		r2
 	pop		r1
 	pop		r0
-
-	# restore RAMPZ and EIND
-	pop		r0
-	out		0x3c,	r0
-	pop		r0
-	out		0x3b,	r0
 
 	# restore flags
 	pop		r0

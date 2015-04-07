@@ -116,9 +116,6 @@ void YKNewTask(void (* task)(void), void *taskStack, UBYTE priority) {
 
 			*(stack--) = (UBYTE)0x80;		//flags
 
-			*(stack--) = (UBYTE)0x00;		//EIND	= 0
-			*(stack--) = (UBYTE)0x00;		//RAMPZ	= 0
-
 			*(stack--) = (UBYTE)0x00;		//R0	= 0
 			*(stack--) = (UBYTE)0x00;		//R1	= 0
 			*(stack--) = (UBYTE)0x00;		//R2	= 0
