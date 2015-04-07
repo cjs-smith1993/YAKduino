@@ -61,8 +61,8 @@ YKDispatcher:
 	##########################################################################
 
 	# x <- SP
-	in		r26,	0x3d
-	in		r27,	0x3e
+	in		r26,	_SFR_IO_ADDR(SP)
+	in		r27,	_SFR_IO_ADDR(SP)+1
 
 	# y <- [YKCurTask] = YKCurTask->stack_ptr
 	lds		r28,	YKCurTask
@@ -96,8 +96,8 @@ YKDispatcher:
 	ldd		r27,	y+1
 
 	# SP = z = *(YKCurTask->stack_ptr)
-	out		0x3d,	r26
-	out		0x3e,	r27
+	out		_SFR_IO_ADDR(SP),	r26
+	out		_SFR_IO_ADDR(SP)+1,	r27
 
 	##########################################################################
 	# restore context
