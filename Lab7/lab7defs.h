@@ -4,7 +4,7 @@ Revision date: 26 December 2004
 Description: Required definitions for EE 425 lab 7 (Event flags)
 */
 
-#include <yakk.h>
+#include <yak.h>
 
 #define EVENT_A_KEY  0x1
 #define EVENT_B_KEY  0x2

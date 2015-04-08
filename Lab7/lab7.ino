@@ -10,7 +10,7 @@ Description: Application code for EE 425 lab 7 (Event flags)
 #include <i2c.h>
 #include <digits.h>
 
-#include <yakk.h>
+#include <yak.h>
 #include "lab7defs.h"
 
 extern LCD lcd;
